@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CCMS.API/CCMS.API.csproj" />
+    <Project Path="src/CCMS.Application/CCMS.Application.csproj" />
+    <Project Path="src/CCMS.Domain/CCMS.Domain.csproj" />
+    <Project Path="src/CCMS.Infrastructure/CCMS.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CCMS.Application.Tests/CCMS.Application.Tests.csproj" />
+    <Project Path="tests/CCMS.Domain.Tests/CCMS.Domain.Tests.csproj" />
+  </Folder>
+</Solution>
