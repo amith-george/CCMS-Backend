@@ -80,6 +80,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<ApplicationDbContextInitializer>();
+builder.Services.AddScoped<ICaseService, CaseService>();
+builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
 
 var app = builder.Build();
 
