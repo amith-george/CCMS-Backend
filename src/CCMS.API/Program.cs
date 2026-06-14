@@ -1,6 +1,9 @@
 using CCMS.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using CCMS.API.Services;
+using CCMS.Application.Interfaces;
+using CCMS.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,10 +19,6 @@ builder.Host.UseSerilog();
 
 // 1. Add API documentation
 builder.Services.AddOpenApi();
-
-using CCMS.API.Services;
-using CCMS.Application.Interfaces;
-using CCMS.Infrastructure.Services;
 
 // 2. Register Controllers
 builder.Services.AddControllers();
