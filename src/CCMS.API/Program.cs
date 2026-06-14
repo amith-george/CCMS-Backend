@@ -17,8 +17,17 @@ builder.Host.UseSerilog();
 // 1. Add API documentation
 builder.Services.AddOpenApi();
 
+using CCMS.API.Services;
+using CCMS.Application.Interfaces;
+using CCMS.Infrastructure.Services;
+
 // 2. Register Controllers
 builder.Services.AddControllers();
+
+// Register Current User Service & Audit Logging
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 
 // 3. Register the Database Context (Connecting it to SQL Server)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
