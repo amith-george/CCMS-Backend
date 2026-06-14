@@ -68,9 +68,9 @@ namespace CCMS.Infrastructure.Services
                 CaseNumber = c.CaseNumber,
                 DefendantName = c.DefendantName,
                 TargetBank = c.TargetBank,
-                AccountNumber = c.AccountNumber,
-                AadhaarNumber = c.AadhaarNumber,
-                PanNumber = c.PanNumber,
+                AccountNumber = CCMS.Application.Helpers.DataMasker.MaskAccountNumber(c.AccountNumber),
+                AadhaarNumber = CCMS.Application.Helpers.DataMasker.MaskAadhaar(c.AadhaarNumber),
+                PanNumber = CCMS.Application.Helpers.DataMasker.MaskPan(c.PanNumber),
                 OrderType = c.OrderType,
                 RequestedFreezeAmount = c.RequestedFreezeAmount,
                 Status = c.Status,
@@ -80,5 +80,6 @@ namespace CCMS.Infrastructure.Services
                 SystemRemarks = c.SystemRemarks
             };
         }
+
     }
 }
