@@ -81,6 +81,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<ApplicationDbContextInitializer>();
 builder.Services.AddScoped<ICaseService, CaseService>();
+builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
 
 var app = builder.Build();
 
