@@ -2,12 +2,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using CCMS.Application.Interfaces;
 using CCMS.Application.DTOs;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CCMS.API.Controllers
 {
-    [Authorize(Roles = "Court")]
+    [Authorize(Roles = "CourtOfficer")]
     [ApiController]
     [Route("api/[controller]")]
     public class CasesController : ControllerBase
@@ -20,14 +21,31 @@ namespace CCMS.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<CaseDto>> CreateCase([FromBody] CreateCaseDto createCaseDto)
+        public async Task<ActionResult<CaseDto>> CreateCase(
+            [FromForm] CreateCaseDto createCaseDto, 
+            IFormFile courtOrder, 
+            IFormFile aadhaarDoc, 
+            IFormFile panDoc)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var result = await _caseService.CreateCaseAsync(createCaseDto);
+            if (courtOrder == null || aadhaarDoc == null || panDoc == null)
+            {
+                return BadRequest("All three supporting documents (CourtOrder, Aadhaar, PAN) must be provided.");
+            }
+
+            var courtOrderStream = courtOrder.OpenReadStream();
+            var aadhaarStream = aadhaarDoc.OpenReadStream();
+            var panStream = panDoc.OpenReadStream();
+
+            var result = await _caseService.CreateCaseAsync(createCaseDto, 
+                (courtOrderStream, courtOrder.FileName, courtOrder.ContentType),
+                (aadhaarStream, aadhaarDoc.FileName, aadhaarDoc.ContentType),
+                (panStream, panDoc.FileName, panDoc.ContentType));
+
             return CreatedAtAction(nameof(GetCases), new { id = result.Id }, result);
         }
 
