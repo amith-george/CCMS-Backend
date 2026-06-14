@@ -14,14 +14,19 @@ namespace CCMS.Infrastructure.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IAuditLogService _auditLogService;
+        private readonly IFileStorageService _fileStorageService;
 
-        public CaseService(ApplicationDbContext context, IAuditLogService auditLogService)
+        public CaseService(ApplicationDbContext context, IAuditLogService auditLogService, IFileStorageService fileStorageService)
         {
             _context = context;
             _auditLogService = auditLogService;
+            _fileStorageService = fileStorageService;
         }
 
-        public async Task<CaseDto> CreateCaseAsync(CreateCaseDto dto)
+        public async Task<CaseDto> CreateCaseAsync(CreateCaseDto dto, 
+            (System.IO.Stream Stream, string FileName, string ContentType) courtOrder,
+            (System.IO.Stream Stream, string FileName, string ContentType) aadhaarDoc,
+            (System.IO.Stream Stream, string FileName, string ContentType) panDoc)
         {
             var today = DateTime.UtcNow.Date;
             
@@ -32,6 +37,11 @@ namespace CCMS.Infrastructure.Services
 
             // CCMS-YYYYMMDD-XXXX
             var caseNumber = $"CCMS-{today:yyyyMMdd}-{(caseCountToday + 1):D4}";
+
+            // Upload files first to ensure they are valid
+            var courtOrderPath = await _fileStorageService.UploadFileAsync(courtOrder.Stream, courtOrder.FileName, courtOrder.ContentType);
+            var aadhaarPath = await _fileStorageService.UploadFileAsync(aadhaarDoc.Stream, aadhaarDoc.FileName, aadhaarDoc.ContentType);
+            var panPath = await _fileStorageService.UploadFileAsync(panDoc.Stream, panDoc.FileName, panDoc.ContentType);
 
             var newCase = new Case
             {
@@ -44,7 +54,13 @@ namespace CCMS.Infrastructure.Services
                 OrderType = dto.OrderType,
                 RequestedFreezeAmount = dto.RequestedFreezeAmount,
                 Status = CCMS.Domain.Enums.CaseStatus.Pending,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                Documents = new List<CaseDocument>
+                {
+                    new CaseDocument { Type = CCMS.Domain.Enums.DocumentType.CourtOrder, FilePath = courtOrderPath, FileName = courtOrder.FileName },
+                    new CaseDocument { Type = CCMS.Domain.Enums.DocumentType.Aadhaar, FilePath = aadhaarPath, FileName = aadhaarDoc.FileName },
+                    new CaseDocument { Type = CCMS.Domain.Enums.DocumentType.PAN, FilePath = panPath, FileName = panDoc.FileName }
+                }
             };
 
             _context.Cases.Add(newCase);
