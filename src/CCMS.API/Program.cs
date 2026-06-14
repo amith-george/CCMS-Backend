@@ -18,7 +18,8 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 // 1. Add API documentation
-builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 // 2. Register Controllers
 builder.Services.AddControllers();
@@ -39,7 +40,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi(); 
+    app.UseSwagger();
+    app.UseSwaggerUI(); 
 
     // Initialize and seed database
     using (var scope = app.Services.CreateScope())
