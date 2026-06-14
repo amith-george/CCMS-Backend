@@ -13,10 +13,12 @@ namespace CCMS.Infrastructure.Services
     public class CaseService : ICaseService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IAuditLogService _auditLogService;
 
-        public CaseService(ApplicationDbContext context)
+        public CaseService(ApplicationDbContext context, IAuditLogService auditLogService)
         {
             _context = context;
+            _auditLogService = auditLogService;
         }
 
         public async Task<CaseDto> CreateCaseAsync(CreateCaseDto dto)
@@ -47,6 +49,8 @@ namespace CCMS.Infrastructure.Services
 
             _context.Cases.Add(newCase);
             await _context.SaveChangesAsync();
+
+            await _auditLogService.LogAsync("Create", "Case", $"Court Case {newCase.CaseNumber} successfully created for defendant {newCase.DefendantName}.", newCase.Id);
 
             return MapToDto(newCase);
         }

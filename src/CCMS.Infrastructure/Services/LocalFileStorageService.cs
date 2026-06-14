@@ -12,9 +12,11 @@ namespace CCMS.Infrastructure.Services
         private readonly string[] _allowedExtensions = { ".pdf", ".jpg", ".jpeg", ".png" };
         private const int MaxFileSizeMB = 5;
         private const long MaxFileSizeBytes = MaxFileSizeMB * 1024 * 1024;
+        private readonly IAuditLogService _auditLogService;
 
-        public LocalFileStorageService()
+        public LocalFileStorageService(IAuditLogService auditLogService)
         {
+            _auditLogService = auditLogService;
             var basePath = Path.Combine(Directory.GetCurrentDirectory(), _storageDirectory);
             if (!Directory.Exists(basePath))
             {
@@ -44,6 +46,8 @@ namespace CCMS.Infrastructure.Services
                 await fileStream.CopyToAsync(fileStreamOutput);
             }
 
+            await _auditLogService.LogAsync("Upload", "File", $"File securely uploaded with identifier: {uniqueFileName}");
+
             // Return relative path
             return filePath.Replace("\\", "/");
         }
@@ -58,14 +62,14 @@ namespace CCMS.Infrastructure.Services
             return Task.FromResult<Stream?>(null);
         }
 
-        public Task DeleteFileAsync(string fileUrl)
+        public async Task DeleteFileAsync(string fileUrl)
         {
             var fullPath = Path.Combine(Directory.GetCurrentDirectory(), fileUrl);
             if (File.Exists(fullPath))
             {
                 File.Delete(fullPath);
+                await _auditLogService.LogAsync("Delete", "File", $"File deleted from storage: {fileUrl}");
             }
-            return Task.CompletedTask;
         }
     }
 }
