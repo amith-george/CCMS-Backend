@@ -12,10 +12,12 @@ namespace CCMS.API.Controllers
     public class BankCasesController : ControllerBase
     {
         private readonly IBankService _bankService;
+        private readonly IBatchValidationService _batchValidationService;
 
-        public BankCasesController(IBankService bankService)
+        public BankCasesController(IBankService bankService, IBatchValidationService batchValidationService)
         {
             _bankService = bankService;
+            _batchValidationService = batchValidationService;
         }
 
         [HttpGet("cases")]
@@ -46,6 +48,13 @@ namespace CCMS.API.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
+        }
+
+        [HttpPost("batch/trigger")]
+        public async Task<IActionResult> TriggerBatchValidation()
+        {
+            int count = await _batchValidationService.ProcessPendingCasesAsync(HttpContext.RequestAborted);
+            return Ok(new { message = "Batch processed successfully.", count = count });
         }
     }
 }
