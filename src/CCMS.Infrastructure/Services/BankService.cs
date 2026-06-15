@@ -59,6 +59,17 @@ namespace CCMS.Infrastructure.Services
 
             if (caseItem.OrderType == OrderType.FreezeAccount)
             {
+                var bankCustomer = await _context.BankCustomers.FirstOrDefaultAsync(b => b.AccountNumber == caseItem.MatchedAccountNumber, cancellationToken);
+                if (bankCustomer == null)
+                {
+                    throw new Exception("Associated bank account not found.");
+                }
+
+                if (responseDto.FinalFreezeAmount > bankCustomer.CurrentBalance)
+                {
+                    throw new Exception($"Insufficient account balance. The freeze amount cannot exceed the current balance of {bankCustomer.CurrentBalance}.");
+                }
+
                 caseItem.Status = CaseStatus.FreezeApplied;
                 caseItem.FinalFreezeAmount = responseDto.FinalFreezeAmount;
                 caseItem.SystemRemarks = "Bank applied freeze.";

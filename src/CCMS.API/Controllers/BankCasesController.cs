@@ -8,7 +8,7 @@ namespace CCMS.API.Controllers
 {
     [ApiController]
     [Route("api/bank")]
-    [Authorize(Roles = "Bank")]
+    [Authorize(Roles = "BankOfficer")]
     public class BankCasesController : ControllerBase
     {
         private readonly IBankService _bankService;
