@@ -83,6 +83,11 @@ builder.Services.AddScoped<ApplicationDbContextInitializer>();
 builder.Services.AddScoped<ICaseService, CaseService>();
 builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
 
+// Register Team Member 3 Background Services
+builder.Services.AddScoped<IBatchValidationService, BatchValidationService>();
+builder.Services.AddScoped<IBankService, BankService>();
+builder.Services.AddHostedService<CCMS.Infrastructure.BackgroundJobs.BatchValidationWorker>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
