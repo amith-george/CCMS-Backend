@@ -55,5 +55,28 @@ namespace CCMS.API.Controllers
             var cases = await _caseService.GetCasesAsync();
             return Ok(cases);
         }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<CaseDetailsDto>> GetCaseById(int id)
+        {
+            var caseDetails = await _caseService.GetCaseByIdAsync(id);
+            if (caseDetails == null)
+            {
+                return NotFound();
+            }
+            return Ok(caseDetails);
+        }
+
+        [HttpGet("{id}/documents/{documentId}")]
+        public async Task<IActionResult> GetDocument(int id, int documentId)
+        {
+            var (stream, contentType, fileName) = await _caseService.GetDocumentAsync(id, documentId);
+            if (stream == null)
+            {
+                return NotFound("Document not found.");
+            }
+
+            return File(stream, contentType, fileName);
+        }
     }
 }
