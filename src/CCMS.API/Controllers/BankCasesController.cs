@@ -21,9 +21,9 @@ namespace CCMS.API.Controllers
         }
 
         [HttpGet("cases")]
-        public async Task<IActionResult> GetBankCases([FromQuery] int page = 1, [FromQuery] int limit = 15)
+        public async Task<IActionResult> GetBankCases([FromQuery] int page = 1, [FromQuery] int limit = 15, [FromQuery] string filter = "all")
         {
-            var cases = await _bankService.GetBankCasesAsync(page, limit, HttpContext.RequestAborted);
+            var cases = await _bankService.GetBankCasesAsync(page, limit, filter, HttpContext.RequestAborted);
             return Ok(cases);
         }
 

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ccms-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ccms-backend
+  template:
+    metadata:
+      labels:
+        app: ccms-backend
+    spec:
+      containers:
+        - name: ccms-backend
+          image: amithccmsacr.azurecr.io/ccms-backend:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ConnectionStrings__DefaultConnection
+              value: "Server=ccms-sqlserver-svc,1433;Database=ccmsdb;User Id=sa;Password=123@Amith#;TrustServerCertificate=True;MultipleActiveResultSets=true"
+            - name: AzureBlobStorage__ConnectionString
+              value: "#{BLOB_CONNECTION_STRING}#"
+            - name: AzureBlobStorage__ContainerName
+              value: "ccms-documents"
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Development"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ccms-backend-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: ccms-backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
