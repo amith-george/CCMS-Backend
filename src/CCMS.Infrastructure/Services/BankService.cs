@@ -104,12 +104,13 @@ namespace CCMS.Infrastructure.Services
                 OrderType = caseItem.OrderType,
                 RequestedFreezeAmount = caseItem.RequestedFreezeAmount,
                 Status = caseItem.Status,
-                CreatedAt = caseItem.CreatedAt,
-                ResolvedAt = caseItem.ResolvedAt,
+                CreatedAt = DateTime.SpecifyKind(caseItem.CreatedAt, DateTimeKind.Utc),
+                ResolvedAt = caseItem.ResolvedAt.HasValue ? DateTime.SpecifyKind(caseItem.ResolvedAt.Value, DateTimeKind.Utc) : null,
                 BankRemarks = caseItem.BankRemarks,
                 SystemRemarks = caseItem.SystemRemarks,
                 MatchedAccountNumber = caseItem.MatchedAccountNumber,
                 BatchFoundBalance = caseItem.BatchFoundBalance,
+                BatchAccountStatus = caseItem.BatchAccountStatus,
                 FinalFreezeAmount = caseItem.FinalFreezeAmount,
                 FinalReportedBalance = caseItem.FinalReportedBalance
             };

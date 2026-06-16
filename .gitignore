@@ -5,6 +5,7 @@
 
 # dotenv files
 .env
+Uploads/
 
 # User-specific files
 *.rsuser
