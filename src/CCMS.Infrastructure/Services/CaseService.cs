@@ -71,13 +71,40 @@ namespace CCMS.Infrastructure.Services
             return MapToDto(newCase);
         }
 
-        public async Task<IEnumerable<CaseDto>> GetCasesAsync()
+        public async Task<PagedResult<CaseDto>> GetCasesAsync(int page = 1, int limit = 15)
         {
-            var cases = await _context.Cases
+            var query = _context.Cases.AsQueryable();
+            var totalCount = await query.CountAsync();
+            var cases = await query
                 .OrderByDescending(c => c.CreatedAt)
+                .Skip((page - 1) * limit)
+                .Take(limit)
                 .ToListAsync();
 
-            return cases.Select(MapToDto);
+            return new PagedResult<CaseDto>
+            {
+                Data = cases.Select(MapToDto),
+                TotalCount = totalCount,
+                Page = page,
+                Limit = limit
+            };
+        }
+
+        public async Task<CaseStatisticsDto> GetStatisticsAsync()
+        {
+            var stats = await _context.Cases
+                .GroupBy(c => 1)
+                .Select(g => new CaseStatisticsDto
+                {
+                    TotalCases = g.Count(),
+                    PendingBatch = g.Count(c => c.Status == CCMS.Domain.Enums.CaseStatus.Pending),
+                    AwaitingAction = g.Count(c => c.Status == CCMS.Domain.Enums.CaseStatus.AccountValidated),
+                    AutoResolved = g.Count(c => c.Status == CCMS.Domain.Enums.CaseStatus.AccountNotFound),
+                    Completed = g.Count(c => c.Status == CCMS.Domain.Enums.CaseStatus.FreezeApplied || c.Status == CCMS.Domain.Enums.CaseStatus.BalanceProvided)
+                })
+                .FirstOrDefaultAsync() ?? new CaseStatisticsDto();
+                
+            return stats;
         }
 
         public async Task<CaseDetailsDto?> GetCaseByIdAsync(int id)

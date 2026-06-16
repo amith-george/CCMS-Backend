@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,14 +23,40 @@ namespace CCMS.Infrastructure.Services
             _auditLogService = auditLogService;
         }
 
-        public async Task<IEnumerable<CaseDto>> GetBankCasesAsync(CancellationToken cancellationToken = default)
+        public async Task<PagedResult<CaseDto>> GetBankCasesAsync(int page = 1, int limit = 15, CancellationToken cancellationToken = default)
         {
-            var cases = await _context.Cases
-                // .Include(c => c.Documents) // Omitted Include unless requested
+            var query = _context.Cases.AsQueryable();
+            var totalCount = await query.CountAsync(cancellationToken);
+            var cases = await query
                 .OrderByDescending(c => c.CreatedAt)
+                .Skip((page - 1) * limit)
+                .Take(limit)
                 .ToListAsync(cancellationToken);
 
-            return cases.Select(MapToDto);
+            return new PagedResult<CaseDto>
+            {
+                Data = cases.Select(MapToDto),
+                TotalCount = totalCount,
+                Page = page,
+                Limit = limit
+            };
+        }
+
+        public async Task<CaseStatisticsDto> GetBankStatisticsAsync(CancellationToken cancellationToken = default)
+        {
+            var stats = await _context.Cases
+                .GroupBy(c => 1)
+                .Select(g => new CaseStatisticsDto
+                {
+                    TotalCases = g.Count(),
+                    PendingBatch = g.Count(c => c.Status == CaseStatus.Pending),
+                    AwaitingAction = g.Count(c => c.Status == CaseStatus.AccountValidated),
+                    AutoResolved = g.Count(c => c.Status == CaseStatus.AccountNotFound),
+                    Completed = g.Count(c => c.Status == CaseStatus.FreezeApplied || c.Status == CaseStatus.BalanceProvided)
+                })
+                .FirstOrDefaultAsync(cancellationToken) ?? new CaseStatisticsDto();
+                
+            return stats;
         }
 
         public async Task<CaseDto?> GetBankCaseByIdAsync(int id, CancellationToken cancellationToken = default)

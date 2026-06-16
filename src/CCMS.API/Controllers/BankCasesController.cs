@@ -21,10 +21,17 @@ namespace CCMS.API.Controllers
         }
 
         [HttpGet("cases")]
-        public async Task<IActionResult> GetBankCases()
+        public async Task<IActionResult> GetBankCases([FromQuery] int page = 1, [FromQuery] int limit = 15)
         {
-            var cases = await _bankService.GetBankCasesAsync(HttpContext.RequestAborted);
+            var cases = await _bankService.GetBankCasesAsync(page, limit, HttpContext.RequestAborted);
             return Ok(cases);
+        }
+
+        [HttpGet("statistics")]
+        public async Task<IActionResult> GetStatistics()
+        {
+            var stats = await _bankService.GetBankStatisticsAsync(HttpContext.RequestAborted);
+            return Ok(stats);
         }
 
         [HttpGet("cases/{id}")]
