@@ -39,15 +39,9 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - task: qetza.replacetokens.replacetokens-task.replacetokens@5
+    - script: |
+        sed -i "s|#{BLOB_CONNECTION_STRING}#|$(BLOB_CONNECTION_STRING)|g" $(Build.SourcesDirectory)/k8s/backend-deployment-service.yml
       displayName: 'Replace tokens in k8s manifests'
-      inputs:
-        rootDirectory: '$(Build.SourcesDirectory)/k8s'
-        targetFiles: '*.yml'
-        encoding: 'auto'
-        tokenPattern: 'custom'
-        tokenPrefix: '#{'
-        tokenSuffix: '}#'
         
     - task: KubernetesManifest@1
       displayName: Deploy to Kubernetes cluster
