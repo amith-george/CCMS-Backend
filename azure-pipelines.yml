@@ -7,7 +7,7 @@ variables:
   containerRegistry: 'amithccmsacr.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
-  kubernetesServiceConnection: 'aks-connection'
+  kubernetesServiceConnection: 'acr-connection'
 
 stages:
 - stage: Build
@@ -30,7 +30,7 @@ stages:
           latest
 
 - stage: Deploy
-  displayName: Deploy to AKS
+  displayName: Deploy to ACR
   dependsOn: Build
   condition: succeeded()
   jobs:
