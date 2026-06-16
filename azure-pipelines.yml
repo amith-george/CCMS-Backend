@@ -2,12 +2,19 @@ trigger:
   - main
 
 variables:
-  dockerRegistryServiceConnection: 'acr-connection'
-  imageRepository: 'ccms-backend'
-  containerRegistry: 'amithccmsacr.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
-  tag: '$(Build.BuildId)'
-  kubernetesServiceConnection: 'aks-connection'
+- group: 'CCMS-Secrets'
+- name: dockerRegistryServiceConnection
+  value: 'acr-connection'
+- name: imageRepository
+  value: 'ccms-backend'
+- name: containerRegistry
+  value: 'amithccmsacr.azurecr.io'
+- name: dockerfilePath
+  value: '$(Build.SourcesDirectory)/Dockerfile'
+- name: tag
+  value: '$(Build.BuildId)'
+- name: kubernetesServiceConnection
+  value: 'aks-connection'
 
 stages:
 - stage: Build
