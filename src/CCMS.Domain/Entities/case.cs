@@ -27,6 +27,7 @@ namespace CCMS.Domain.Entities
         // Batch Job Results
         public string? MatchedAccountNumber { get; set; }
         public decimal? BatchFoundBalance { get; set; }
+        public string? BatchAccountStatus { get; set; }
         
         // Bank Officer Response
         public decimal? FinalFreezeAmount { get; set; }

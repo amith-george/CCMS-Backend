@@ -104,6 +104,7 @@ namespace CCMS.Infrastructure.Services
                 ResolvedAt = c.ResolvedAt,
                 BankRemarks = c.BankRemarks,
                 SystemRemarks = c.SystemRemarks,
+                BatchAccountStatus = c.BatchAccountStatus,
                 Documents = c.Documents.Select(d => new CaseDocumentDto
                 {
                     Id = d.Id,
@@ -157,7 +158,8 @@ namespace CCMS.Infrastructure.Services
                 CreatedAt = c.CreatedAt,
                 ResolvedAt = c.ResolvedAt,
                 BankRemarks = c.BankRemarks,
-                SystemRemarks = c.SystemRemarks
+                SystemRemarks = c.SystemRemarks,
+                BatchAccountStatus = c.BatchAccountStatus
             };
         }
 
