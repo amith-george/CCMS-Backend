@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ccms-sqlserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ccms-sqlserver
+  template:
+    metadata:
+      labels:
+        app: ccms-sqlserver
+    spec:
+      containers:
+        - name: sqlserver
+          image: mcr.microsoft.com/mssql/server:2022-latest
+          ports:
+            - containerPort: 1433
+          env:
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: MSSQL_SA_PASSWORD
+              value: "123@Amith#" 
+          volumeMounts:
+            - name: sqlserver-data
+              mountPath: /var/opt/mssql
+      volumes:
+        - name: sqlserver-data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ccms-sqlserver-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: ccms-sqlserver
+  ports:
+    - protocol: TCP
+      port: 1433
+      targetPort: 1433
