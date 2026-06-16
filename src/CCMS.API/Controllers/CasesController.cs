@@ -50,9 +50,9 @@ namespace CCMS.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<PagedResult<CaseDto>>> GetCases([FromQuery] int page = 1, [FromQuery] int limit = 15)
+        public async Task<ActionResult<PagedResult<CaseDto>>> GetCases([FromQuery] int page = 1, [FromQuery] int limit = 15, [FromQuery] string filter = "all")
         {
-            var cases = await _caseService.GetCasesAsync(page, limit);
+            var cases = await _caseService.GetCasesAsync(page, limit, filter);
             return Ok(cases);
         }
 

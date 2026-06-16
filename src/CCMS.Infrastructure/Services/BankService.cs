@@ -23,9 +23,25 @@ namespace CCMS.Infrastructure.Services
             _auditLogService = auditLogService;
         }
 
-        public async Task<PagedResult<CaseDto>> GetBankCasesAsync(int page = 1, int limit = 15, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<CaseDto>> GetBankCasesAsync(int page = 1, int limit = 15, string filter = "all", CancellationToken cancellationToken = default)
         {
             var query = _context.Cases.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filter) && filter != "all")
+            {
+                if (filter.Equals("completed", StringComparison.OrdinalIgnoreCase)) {
+                    query = query.Where(c => c.Status == CaseStatus.FreezeApplied || c.Status == CaseStatus.BalanceProvided);
+                } else if (filter.Equals("closed", StringComparison.OrdinalIgnoreCase)) {
+                    query = query.Where(c => c.Status == CaseStatus.AccountNotFound);
+                } else if (filter.Equals("pending", StringComparison.OrdinalIgnoreCase)) {
+                    query = query.Where(c => c.Status == CaseStatus.Pending);
+                } else if (filter.Equals("awaitingAction", StringComparison.OrdinalIgnoreCase)) {
+                    query = query.Where(c => c.Status == CaseStatus.AccountValidated);
+                } else if (int.TryParse(filter, out int statusInt)) {
+                    query = query.Where(c => (int)c.Status == statusInt);
+                }
+            }
+
             var totalCount = await query.CountAsync(cancellationToken);
             var cases = await query
                 .OrderByDescending(c => c.CreatedAt)
