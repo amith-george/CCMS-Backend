@@ -93,7 +93,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<ApplicationDbContextInitializer>();
 builder.Services.AddScoped<ICaseService, CaseService>();
-builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
+builder.Services.AddScoped<IFileStorageService, AzureBlobStorageService>();
 
 // Register Team Member 3 Background Services
 builder.Services.AddScoped<IBatchValidationService, BatchValidationService>();
