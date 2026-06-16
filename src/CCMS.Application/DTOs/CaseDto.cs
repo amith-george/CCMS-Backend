@@ -23,6 +23,7 @@ namespace CCMS.Application.DTOs
 
         public string? BankRemarks { get; set; }
         public string? SystemRemarks { get; set; } 
+        public string? BatchAccountStatus { get; set; }
         
         public string? MatchedAccountNumber { get; set; }
         public decimal? BatchFoundBalance { get; set; }

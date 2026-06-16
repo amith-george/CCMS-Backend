@@ -45,6 +45,7 @@ namespace CCMS.Infrastructure.Services
                         caseItem.Status = CaseStatus.AccountValidated;
                         caseItem.MatchedAccountNumber = bankCustomer.AccountNumber;
                         caseItem.BatchFoundBalance = bankCustomer.CurrentBalance;
+                        caseItem.BatchAccountStatus = bankCustomer.AccountStatus;
                         caseItem.SystemRemarks = "Account matched and validated successfully.";
                         
                         await _auditLogService.LogAsync("BatchValidation", "Case", "AccountValidated", caseItem.Id, cancellationToken);
