@@ -57,7 +57,7 @@ namespace CCMS.Infrastructure.Services
                 throw new Exception("Case is not in a valid state to receive a bank response.");
             }
 
-            if (caseItem.OrderType == OrderType.FreezeAccount)
+            if (caseItem.OrderType == OrderType.FreezeAmount)
             {
                 var bankCustomer = await _context.BankCustomers.FirstOrDefaultAsync(b => b.AccountNumber == caseItem.MatchedAccountNumber, cancellationToken);
                 if (bankCustomer == null)

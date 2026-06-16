@@ -2,7 +2,7 @@ namespace CCMS.Domain.Enums
 {
     public enum OrderType
     {
-        FreezeAccount,
+        FreezeAmount,
         BalanceEnquiry
     }
 }
