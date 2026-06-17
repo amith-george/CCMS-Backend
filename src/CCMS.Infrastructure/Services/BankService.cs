@@ -16,11 +16,13 @@ namespace CCMS.Infrastructure.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IAuditLogService _auditLogService;
+        private readonly IFileStorageService _fileStorageService;
 
-        public BankService(ApplicationDbContext context, IAuditLogService auditLogService)
+        public BankService(ApplicationDbContext context, IAuditLogService auditLogService, IFileStorageService fileStorageService)
         {
             _context = context;
             _auditLogService = auditLogService;
+            _fileStorageService = fileStorageService;
         }
 
         public async Task<PagedResult<CaseDto>> GetBankCasesAsync(int page = 1, int limit = 15, string filter = "all", CancellationToken cancellationToken = default)
@@ -131,6 +133,34 @@ namespace CCMS.Infrastructure.Services
 
             await _context.SaveChangesAsync(cancellationToken);
             return true;
+        }
+
+        public async Task<(System.IO.Stream? Stream, string ContentType, string FileName)> GetCourtOrderDocumentAsync(int caseId, CancellationToken cancellationToken = default)
+        {
+            var caseItem = await _context.Cases
+                .Include(c => c.Documents)
+                .FirstOrDefaultAsync(c => c.Id == caseId, cancellationToken);
+
+            if (caseItem == null) return (null, string.Empty, string.Empty);
+
+            var courtOrderDoc = caseItem.Documents.FirstOrDefault(d => d.Type == CCMS.Domain.Enums.DocumentType.CourtOrder);
+            if (courtOrderDoc == null) return (null, string.Empty, string.Empty);
+
+            var stream = await _fileStorageService.GetFileAsync(courtOrderDoc.FilePath);
+            return (stream, GetContentType(courtOrderDoc.FileName), courtOrderDoc.FileName);
+        }
+
+        private static string GetContentType(string fileName)
+        {
+            if (string.IsNullOrWhiteSpace(fileName)) return "application/octet-stream";
+            var ext = System.IO.Path.GetExtension(fileName).ToLowerInvariant();
+            return ext switch
+            {
+                ".pdf" => "application/pdf",
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                _ => "application/octet-stream",
+            };
         }
 
         private static CaseDto MapToDto(Domain.Entities.Case caseItem)

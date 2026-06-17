@@ -35,9 +35,7 @@ namespace CCMS.Infrastructure.BackgroundJobs
                     using var scope = _serviceProvider.CreateScope();
                     var batchValidationService = scope.ServiceProvider.GetRequiredService<IBatchValidationService>();
                     
-                    int count = await batchValidationService.ProcessPendingCasesAsync(stoppingToken);
-                    
-                    _logger.LogInformation("BatchValidationWorker processed {count} pending cases.", count);
+                    await batchValidationService.ProcessPendingCasesAsync(stoppingToken);
                 }
                 catch (Exception ex)
                 {

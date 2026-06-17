@@ -21,8 +21,8 @@ namespace CCMS.Infrastructure.Services
         public AzureBlobStorageService(IConfiguration configuration, IAuditLogService auditLogService)
         {
             _auditLogService = auditLogService;
-            var connectionString = configuration["AzureBlobStorage:ConnectionString"];
-            _containerName = configuration["AzureBlobStorage:ContainerName"];
+            var connectionString = configuration["AzureBlobStorage:ConnectionString"] ?? throw new ArgumentNullException("AzureBlobStorage:ConnectionString is missing");
+            _containerName = configuration["AzureBlobStorage:ContainerName"] ?? throw new ArgumentNullException("AzureBlobStorage:ContainerName is missing");
             _blobServiceClient = new BlobServiceClient(connectionString);
         }
 

@@ -63,18 +63,15 @@ namespace CCMS.API.Controllers
             int count = await _batchValidationService.ProcessPendingCasesAsync(HttpContext.RequestAborted);
             return Ok(new { message = "Batch processed successfully.", count = count });
         }
-        [HttpGet("cases/{id}/court-order")]
-        public async Task<IActionResult> DownloadCourtOrder(int id, [FromServices] CCMS.Infrastructure.Persistence.ApplicationDbContext dbContext, [FromServices] CCMS.Application.Interfaces.ICaseService caseService)
-        {
-            var doc = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.FirstOrDefaultAsync(
-                dbContext.CaseDocuments, 
-                d => d.CaseId == id && d.Type == CCMS.Domain.Enums.DocumentType.CourtOrder, 
-                HttpContext.RequestAborted);
-            
-            if (doc == null) return NotFound(new { error = "Court order document not found." });
 
-            var (stream, contentType, fileName) = await caseService.GetDocumentAsync(id, doc.Id);
-            if (stream == null) return NotFound(new { error = "File not found." });
+        [HttpGet("cases/{id}/court-order")]
+        public async Task<IActionResult> DownloadCourtOrder(int id)
+        {
+            var (stream, contentType, fileName) = await _bankService.GetCourtOrderDocumentAsync(id, HttpContext.RequestAborted);
+            if (stream == null)
+            {
+                return NotFound(new { error = "Court order document not found." });
+            }
 
             return File(stream, contentType, fileName);
         }
