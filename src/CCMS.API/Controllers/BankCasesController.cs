@@ -63,5 +63,17 @@ namespace CCMS.API.Controllers
             int count = await _batchValidationService.ProcessPendingCasesAsync(HttpContext.RequestAborted);
             return Ok(new { message = "Batch processed successfully.", count = count });
         }
+
+        [HttpGet("cases/{id}/court-order")]
+        public async Task<IActionResult> DownloadCourtOrder(int id)
+        {
+            var (stream, contentType, fileName) = await _bankService.GetCourtOrderDocumentAsync(id, HttpContext.RequestAborted);
+            if (stream == null)
+            {
+                return NotFound(new { error = "Court order document not found." });
+            }
+
+            return File(stream, contentType, fileName);
+        }
     }
 }
