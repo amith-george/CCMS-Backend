@@ -48,6 +48,8 @@ stages:
     steps:
     - script: |
         sed -i "s|#{BLOB_CONNECTION_STRING}#|$(BLOB_CONNECTION_STRING)|g" $(Build.SourcesDirectory)/k8s/backend-deployment-service.yml
+        sed -i "s|#{DB_CONNECTION_STRING}#|$(DB_CONNECTION_STRING)|g" $(Build.SourcesDirectory)/k8s/backend-deployment-service.yml
+        sed -i "s|#{JWT_SECRET}#|$(JWT_SECRET)|g" $(Build.SourcesDirectory)/k8s/backend-deployment-service.yml
       displayName: 'Replace tokens in k8s manifests'
         
     - task: KubernetesManifest@1
