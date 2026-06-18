@@ -19,7 +19,9 @@ spec:
             - containerPort: 8080
           env:
             - name: ConnectionStrings__DefaultConnection
-              value: "Server=ccms-sqlserver-svc,1433;Database=ccmsdb;User Id=sa;Password=123@Amith#;TrustServerCertificate=True;MultipleActiveResultSets=true"
+              value: "#{DB_CONNECTION_STRING}#"
+            - name: JwtSettings__Secret
+              value: "#{JWT_SECRET}#"
             - name: AzureBlobStorage__ConnectionString
               value: "#{BLOB_CONNECTION_STRING}#"
             - name: AzureBlobStorage__ContainerName

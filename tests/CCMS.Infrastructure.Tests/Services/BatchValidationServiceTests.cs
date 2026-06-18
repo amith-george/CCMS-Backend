@@ -7,6 +7,7 @@ using CCMS.Infrastructure.Persistence;
 using CCMS.Infrastructure.Services;
 using CCMS.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -50,7 +51,8 @@ namespace CCMS.Infrastructure.Tests.Services
             using (var context = new ApplicationDbContext(options))
             {
                 var mockAudit = new Mock<IAuditLogService>();
-                var service = new BatchValidationService(context, mockAudit.Object);
+                var mockLogger = new Mock<ILogger<BatchValidationService>>();
+                var service = new BatchValidationService(context, mockAudit.Object, mockLogger.Object);
 
                 await service.ProcessPendingCasesAsync(CancellationToken.None);
 

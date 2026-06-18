@@ -27,7 +27,8 @@ namespace CCMS.Infrastructure.Tests.Services
         {
             var context = new ApplicationDbContext(CreateNewContextOptions());
             var mockAudit = new Mock<IAuditLogService>();
-            var service = new BankService(context, mockAudit.Object);
+            var mockFileStorage = new Mock<IFileStorageService>();
+            var service = new BankService(context, mockAudit.Object, mockFileStorage.Object);
 
             await Assert.ThrowsAsync<Exception>(() => service.SubmitBankResponseAsync(99, new BankResponseDto()));
         }
@@ -41,7 +42,8 @@ namespace CCMS.Infrastructure.Tests.Services
             await context.SaveChangesAsync();
 
             var mockAudit = new Mock<IAuditLogService>();
-            var service = new BankService(context, mockAudit.Object);
+            var mockFileStorage = new Mock<IFileStorageService>();
+            var service = new BankService(context, mockAudit.Object, mockFileStorage.Object);
 
             var ex = await Assert.ThrowsAsync<Exception>(() => service.SubmitBankResponseAsync(1, new BankResponseDto()));
             Assert.Equal("Case is not in a valid state to receive a bank response.", ex.Message);
@@ -61,7 +63,8 @@ namespace CCMS.Infrastructure.Tests.Services
             using (var context = new ApplicationDbContext(options))
             {
                 var mockAudit = new Mock<IAuditLogService>();
-                var service = new BankService(context, mockAudit.Object);
+                var mockFileStorage = new Mock<IFileStorageService>();
+                var service = new BankService(context, mockAudit.Object, mockFileStorage.Object);
                 var response = new BankResponseDto { FinalFreezeAmount = 500m, BankRemarks = "Done" };
 
                 var result = await service.SubmitBankResponseAsync(1, response);
