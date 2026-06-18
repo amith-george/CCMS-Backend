@@ -27,7 +27,7 @@ namespace CCMS.Infrastructure.BackgroundJobs
             // Run every 15 minutes (The Scheduled Trigger)
             using var timer = new PeriodicTimer(TimeSpan.FromMinutes(15));
  
-            while (!stoppingToken.IsCancellationRequested && await timer.WaitForNextTickAsync(stoppingToken))
+            do
             {
                 _logger.LogInformation("BatchValidationWorker running at: {time}", DateTimeOffset.Now);
  
@@ -57,6 +57,7 @@ namespace CCMS.Infrastructure.BackgroundJobs
                     _logger.LogError(ex, "An error occurred while running the BatchValidationWorker.");
                 }
             }
+            while (!stoppingToken.IsCancellationRequested && await timer.WaitForNextTickAsync(stoppingToken));
         }
     }
 }
